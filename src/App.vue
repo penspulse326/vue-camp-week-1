@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick, watch } from 'vue';
+import drinkStock from './data.json';
 
 const drinkList = ref<Drink[] | null>(null);
 const editingInput = ref<HTMLInputElement[]>([]);
@@ -25,19 +26,9 @@ function handleSaveItem() {
   };
 }
 
-async function getDrinkStock() {
-  try {
-    const response = await fetch('./src/data.json');
-    const data: Drink[] = await response.json();
-    drinkList.value = data;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 onMounted(() => {
   setTimeout(() => {
-    getDrinkStock();
+    drinkList.value = drinkStock as Drink[];
   }, 1000);
 });
 
