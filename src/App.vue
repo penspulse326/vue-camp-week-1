@@ -2,8 +2,8 @@
 import { ref, onMounted, nextTick, watch } from 'vue';
 
 const drinkList = ref<Drink[] | null>(null);
-const editingInput = ref<HTMLInputElement | null>(null);
-const editedItem = ref<EditedItem>({});
+const editingInput = ref<HTMLInputElement[]>([]);
+const editedItem = ref<EditedItem | null>(null);
 
 function handleEditItem(name: string, index: number) {
   const newData: EditedItem = {
@@ -14,9 +14,15 @@ function handleEditItem(name: string, index: number) {
 }
 
 function handleSaveItem() {
+  if (!editedItem.value || !drinkList.value) return;
+
   const { name, index } = editedItem.value;
+
   drinkList.value[index].name = name;
-  editedItem.value = {};
+  editedItem.value = {
+    name: '',
+    index: -1
+  };
 }
 
 async function getDrinkStock() {
@@ -36,8 +42,6 @@ onMounted(() => {
 });
 
 watch(editedItem, () => {
-  if (!editingInput.value) return;
-
   nextTick(() => {
     editingInput.value[0]?.focus();
   });
@@ -51,8 +55,8 @@ interface Drink {
 }
 
 interface EditedItem {
-  name?: string;
-  index?: number;
+  name: string;
+  index: number;
 }
 </script>
 
@@ -71,10 +75,11 @@ interface EditedItem {
       <tbody>
         <tr v-for="(item, index) in drinkList" :key="item.name">
           <td @dblclick="handleEditItem(item.name, index)">
-            <span v-if="index !== editedItem.index">{{ item.name }}</span>
+            <span v-if="index !== editedItem?.index">{{ item.name }}</span>
             <input
               v-else
               type="text"
+              :key="item.name"
               ref="editingInput"
               autofocus
               v-model="editedItem.name"
