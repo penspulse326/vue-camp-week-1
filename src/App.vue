@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick, watch } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import drinkStock from './data.json';
 
 const drinkList = ref<Drink[] | null>(null);
